@@ -3,7 +3,7 @@ package:
   version: 0.4.20.dev0
 
 source:
-   git_rev: 
+   git_rev: c5fc8b0cbb9eb4a703b47ba52ac81473f2668c29
    git_url: https://github.com/catid/unfiltered-diffusers.git
 
 requirements:

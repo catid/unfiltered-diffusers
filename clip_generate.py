@@ -9,7 +9,9 @@ import random
 
 model_id = "CompVis/stable-diffusion-v1-4" #@param {type: "string"}
 clip_model_id = "laion/CLIP-ViT-B-32-laion2B-s34B-b79K" #@param ["laion/CLIP-ViT-B-32-laion2B-s34B-b79K", "laion/CLIP-ViT-L-14-laion2B-s32B-b82K", "laion/CLIP-ViT-H-14-laion2B-s32B-b79K", "laion/CLIP-ViT-g-14-laion2B-s12B-b42K", "openai/clip-vit-base-patch32", "openai/clip-vit-base-patch16", "openai/clip-vit-large-patch14"] {allow-input: true}
-scheduler = "lms" #@param ['plms', 'lms']
+
+# Warning: Use default scheduler plms.  The lms one is broken.
+scheduler = "plms" #@param ['plms', 'lms']
 
 prompt = "rock climbing cat"
 

@@ -29,8 +29,6 @@ pipe = StableDiffusionPipeline.from_pretrained(
 )
 pipe = pipe.to("cuda")
 
-prompt = "sexy bird posing nude"
-
 
 for j in range(1, 100):
 

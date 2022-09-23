@@ -14,7 +14,7 @@ Colab for inference
 ## Running locally 
 ### Installing the dependencies
 
-Before running the scipts, make sure to install the library's training dependencies:
+Before running the scripts, make sure to install the library's training dependencies:
 
 ```bash
 pip install diffusers[training] accelerate transformers
@@ -33,7 +33,7 @@ You need to accept the model license before downloading or using the weights. In
 
 You have to be a registered user in 🤗 Hugging Face Hub, and you'll also need to use an access token for the code to work. For more information on access tokens, please refer to [this section of the documentation](https://huggingface.co/docs/hub/security-tokens).
 
-Run the following command to autheticate your token
+Run the following command to authenticate your token
 
 ```bash
 huggingface-cli login
@@ -79,7 +79,7 @@ from torch import autocast
 from diffusers import StableDiffusionPipeline
 
 model_id = "path-to-your-trained-model"
-pipe = pipe = StableDiffusionPipeline.from_pretrained(model_id,torch_dtype=torch.float16).to("cuda")
+pipe = StableDiffusionPipeline.from_pretrained(model_id,torch_dtype=torch.float16).to("cuda")
 
 prompt = "A <cat-toy> backpack"
 

@@ -238,7 +238,6 @@ class TextualInversionDataset(Dataset):
         placeholder_token="*",
         center_crop=False,
     ):
-
         self.data_root = data_root
         self.tokenizer = tokenizer
         self.learnable_property = learnable_property
@@ -423,7 +422,7 @@ def main():
         eps=args.adam_epsilon,
     )
 
-    # TODO (patil-suraj): laod scheduler using args
+    # TODO (patil-suraj): load scheduler using args
     noise_scheduler = DDPMScheduler(
         beta_start=0.00085, beta_end=0.012, beta_schedule="scaled_linear", num_train_timesteps=1000, tensor_format="pt"
     )
@@ -505,7 +504,9 @@ def main():
                 noise = torch.randn(latents.shape).to(latents.device)
                 bsz = latents.shape[0]
                 # Sample a random timestep for each image
-                timesteps = torch.randint(0, noise_scheduler.num_train_timesteps, (bsz,), device=latents.device).long()
+                timesteps = torch.randint(
+                    0, noise_scheduler.config.num_train_timesteps, (bsz,), device=latents.device
+                ).long()
 
                 # Add noise to the latents according to the noise magnitude at each timestep
                 # (this is the forward diffusion process)
@@ -564,7 +565,7 @@ def main():
         pipeline.save_pretrained(args.output_dir)
         # Also save the newly trained embeddings
         learned_embeds = accelerator.unwrap_model(text_encoder).get_input_embeddings().weight[placeholder_token_id]
-        learned_embeds_dict = {args.placeholder_token: learned_embeds}
+        learned_embeds_dict = {args.placeholder_token: learned_embeds.detach().cpu()}
         torch.save(learned_embeds_dict, os.path.join(args.output_dir, "learned_embeds.bin"))
 
         if args.push_to_hub:

@@ -4,8 +4,6 @@ This removes the NSFW filter to improve performance of image generation when use
 
 ## How-To
 
-Run:
-
 ```
 pip install .
 ```

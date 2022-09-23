@@ -3,7 +3,7 @@ from torch import autocast
 import torch
 from diffusers import StableDiffusionPipeline, LMSDiscreteScheduler
 import time
-
+import random
 
 
 prompt = "rock climbing cat"

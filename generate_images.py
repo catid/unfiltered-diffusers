@@ -4,6 +4,18 @@ import torch
 from diffusers import StableDiffusionPipeline, LMSDiscreteScheduler
 import time
 
+
+
+prompt = "rock climbing cat"
+
+seed = random.randint(0, 2000000000)
+steps = 60
+h = 512
+w = 512
+batch = 6
+
+
+
 lms = LMSDiscreteScheduler(
     beta_start=0.00085, 
     beta_end=0.012, 
@@ -19,12 +31,6 @@ pipe = pipe.to("cuda")
 
 prompt = "sexy bird posing nude"
 
-
-seed = 18736684
-steps = 60
-h = 512
-w = 512
-batch = 6
 
 for j in range(1, 100):
 

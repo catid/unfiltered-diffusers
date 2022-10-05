@@ -11,7 +11,7 @@ seed = random.randint(0, 2000000000)
 steps = 100
 h = 512
 w = 512
-batch = 1
+batch = 12
 n=50 # Number of image pairs to generate
 
 model = "CompVis/stable-diffusion-v1-4"
@@ -19,7 +19,7 @@ model = "CompVis/stable-diffusion-v1-4"
 
 
 
-dir_name = "conch_flower4"
+dir_name = "test"
 
 text_prompt = "conch shell near colorful flowers, white frame"
 

@@ -34,3 +34,18 @@ CUDA_VISIBLE_DEVICES=0 python3 generate_images.py
 ```
 CUDA_VISIBLE_DEVICES=0 python3 clip_generate.py
 ```
+
+## xformers speedup
+
+I merged in the speedup from this PR:
+https://github.com/huggingface/diffusers/pull/532
+
+To use it:
+
+```
+export USE_MEMORY_EFFICIENT_ATTENTION=1
+pip install git+https://github.com/facebookresearch/xformers@51dd119#egg=xformers
+```
+
+Then reinstall this version of diffusers, and it should activate the feature.
+

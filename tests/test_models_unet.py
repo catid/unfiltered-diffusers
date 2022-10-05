@@ -13,13 +13,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import gc
 import math
+import tracemalloc
 import unittest
 
 import torch
 
 from diffusers import UNet2DConditionModel, UNet2DModel
-from diffusers.testing_utils import floats_tensor, slow, torch_device
+from diffusers.utils import floats_tensor, slow, torch_device
 
 from .test_modeling_common import ModelTesterMixin
 
@@ -133,6 +135,74 @@ class UNetLDMModelTests(ModelTesterMixin, unittest.TestCase):
 
         assert image is not None, "Make sure output is not None"
 
+    @unittest.skipIf(torch_device == "cpu", "This test is supposed to run on GPU")
+    def test_from_pretrained_accelerate(self):
+        model, _ = UNet2DModel.from_pretrained(
+            "fusing/unet-ldm-dummy-update", output_loading_info=True, device_map="auto"
+        )
+        model.to(torch_device)
+        image = model(**self.dummy_input).sample
+
+        assert image is not None, "Make sure output is not None"
+
+    @unittest.skipIf(torch_device == "cpu", "This test is supposed to run on GPU")
+    def test_from_pretrained_accelerate_wont_change_results(self):
+        model_accelerate, _ = UNet2DModel.from_pretrained(
+            "fusing/unet-ldm-dummy-update", output_loading_info=True, device_map="auto"
+        )
+        model_accelerate.to(torch_device)
+        model_accelerate.eval()
+
+        noise = torch.randn(
+            1,
+            model_accelerate.config.in_channels,
+            model_accelerate.config.sample_size,
+            model_accelerate.config.sample_size,
+            generator=torch.manual_seed(0),
+        )
+        noise = noise.to(torch_device)
+        time_step = torch.tensor([10] * noise.shape[0]).to(torch_device)
+
+        arr_accelerate = model_accelerate(noise, time_step)["sample"]
+
+        # two models don't need to stay in the device at the same time
+        del model_accelerate
+        torch.cuda.empty_cache()
+        gc.collect()
+
+        model_normal_load, _ = UNet2DModel.from_pretrained("fusing/unet-ldm-dummy-update", output_loading_info=True)
+        model_normal_load.to(torch_device)
+        model_normal_load.eval()
+        arr_normal_load = model_normal_load(noise, time_step)["sample"]
+
+        assert torch.allclose(arr_accelerate, arr_normal_load, rtol=1e-3)
+
+    @unittest.skipIf(torch_device == "cpu", "This test is supposed to run on GPU")
+    def test_memory_footprint_gets_reduced(self):
+        torch.cuda.empty_cache()
+        gc.collect()
+
+        tracemalloc.start()
+        model_accelerate, _ = UNet2DModel.from_pretrained(
+            "fusing/unet-ldm-dummy-update", output_loading_info=True, device_map="auto"
+        )
+        model_accelerate.to(torch_device)
+        model_accelerate.eval()
+        _, peak_accelerate = tracemalloc.get_traced_memory()
+
+        del model_accelerate
+        torch.cuda.empty_cache()
+        gc.collect()
+
+        model_normal_load, _ = UNet2DModel.from_pretrained("fusing/unet-ldm-dummy-update", output_loading_info=True)
+        model_normal_load.to(torch_device)
+        model_normal_load.eval()
+        _, peak_normal = tracemalloc.get_traced_memory()
+
+        tracemalloc.stop()
+
+        assert peak_accelerate < peak_normal
+
     def test_output_pretrained(self):
         model = UNet2DModel.from_pretrained("fusing/unet-ldm-dummy-update")
         model.eval()
@@ -199,7 +269,7 @@ class UNet2DConditionModelTests(ModelTesterMixin, unittest.TestCase):
 
     def test_gradient_checkpointing(self):
         init_dict, inputs_dict = self.prepare_init_args_and_inputs_for_common()
-        model = self.model_class(**init_dict)
+        model = self.model_class(**init_dict).eval()
         model.to(torch_device)
 
         out = model(**inputs_dict).sample

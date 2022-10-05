@@ -67,11 +67,12 @@ To create the package for pypi.
     you need to go back to main before executing this.
 """
 
-import re
 import os
+import re
 from distutils.core import Command
 
 from setuptools import find_packages, setup
+
 
 # IMPORTANT:
 # 1. all dependencies should be listed here with their version requirements if any
@@ -93,7 +94,6 @@ _deps = [
     "modelcards>=0.1.4",
     "numpy",
     "onnxruntime",
-    "onnxruntime-gpu",
     "pytest",
     "pytest-timeout",
     "pytest-xdist",
@@ -178,9 +178,9 @@ extras["quality"] = deps_list("black", "isort", "flake8", "hf-doc-builder")
 extras["docs"] = deps_list("hf-doc-builder")
 extras["training"] = deps_list("accelerate", "datasets", "tensorboard", "modelcards")
 extras["test"] = deps_list(
+    "accelerate",
     "datasets",
     "onnxruntime",
-    "onnxruntime-gpu",
     "pytest",
     "pytest-timeout",
     "pytest-xdist",
@@ -195,7 +195,9 @@ if os.name == "nt":  # windows
 else:
     extras["flax"] = deps_list("jax", "jaxlib", "flax")
 
-extras["dev"] = extras["quality"] + extras["test"] + extras["training"] + extras["docs"] + extras["torch"] + extras["flax"]
+extras["dev"] = (
+    extras["quality"] + extras["test"] + extras["training"] + extras["docs"] + extras["torch"] + extras["flax"]
+)
 
 install_requires = [
     deps["importlib_metadata"],

@@ -32,10 +32,10 @@ With the xformers speedup above, this only uses 10 GB VRAM even with batches of 
 
 ## Generate Images
 
-To generate images on a specific GPU in a multi-GPU rig:
+To generate images on a specific GPU in a multi-GPU rig, pass an argument:
 
 ```
-USE_MEMORY_EFFICIENT_ATTENTION=1 CUDA_VISIBLE_DEVICES=0 python3 generate_images.py
+python3 generate_images.py 2
 ```
 
 

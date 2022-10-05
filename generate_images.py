@@ -1,10 +1,18 @@
-# make sure you're logged in with `huggingface-cli login`
+import sys
+import os
+
+if len(sys.argv) > 1:
+    print('Setting CUDA device:', sys.argv[1])
+    os.environ["CUDA_VISIBLE_DEVICES"] = sys.argv[1]
+
+os.environ["USE_MEMORY_EFFICIENT_ATTENTION"] = "1"
+
+
 from torch import autocast
 import torch
 from diffusers import StableDiffusionPipeline, LMSDiscreteScheduler
 import time
 import random
-import os
 
 
 seed = random.randint(0, 2000000000)
@@ -14,7 +22,13 @@ w = 512
 batch = 12
 n=50 # Number of image pairs to generate
 
-model = "CompVis/stable-diffusion-v1-4"
+
+if os.path.exists('../stable-diffusion-v1-4'):
+    print("Using ../stable-diffusion-v1-4")
+    model = "../stable-diffusion-v1-4"
+else:
+    model = "CompVis/stable-diffusion-v1-4"
+
 #model = "hakurei/waifu-diffusion"
 
 

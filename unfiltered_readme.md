@@ -19,6 +19,8 @@ pip install git+https://github.com/facebookresearch/xformers@51dd119#egg=xformer
 ## Setup
 
 ```
+pip install transformers ftfy scipy
+pip install triton==2.0.0.dev20220701
 pip install .
 ```
 
